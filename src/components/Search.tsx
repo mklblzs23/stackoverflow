@@ -3,7 +3,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { ChangeEvent } from 'react'
 
 type Props = {
-  onChange?: (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
+  onChange?: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | undefined>) => void
 }
 
 export default function Search(props: Props) {

@@ -1,10 +1,11 @@
 import { ChangeEvent, useEffect, useState } from 'react'
-import Navbar from '../components/Navbar'
-import QuestionRow from '../components/QuestionRow'
-import Search from '../components/Search'
-import useDebounce from '../hooks/useDebounce'
-import { stackoverflowService } from '../services/stackoverflowService'
+import Navbar from '../../components/Navbar'
+import QuestionRow from './QuestionRow'
+import Search from '../../components/Search'
+import useDebounce from '../../hooks/useDebounce'
+import { stackoverflowService } from '../../services/stackoverflowService'
 import toast from 'react-hot-toast'
+import Loader from '../../components/Loader'
 
 type List = {
   title: string
@@ -23,13 +24,13 @@ type List = {
   body: string
 }
 
-const SearchList = () => {
+const SearchPage = () => {
   const [search, setSearch] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [list, setList] = useState<List[]>([])
   const debounceSearch = useDebounce(search)
 
-  const onChangeSearch = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const onChangeSearch = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | undefined>) => {
     const value = event?.target?.value
     setSearch(value)
   }
@@ -40,10 +41,10 @@ const SearchList = () => {
     const loadData = async () => {
       setIsLoading(true)
       const data = await stackoverflowService.search(debounceSearch)
-      console.log(data)
+
       if (!isCancelled) {
-        if (data && 'error' in data) {
-          toast.error(data.error)
+        if (data && 'error_message' in data) {
+          toast.error(data.error_message)
         } else {
           setList(data.items)
         }
@@ -73,7 +74,7 @@ const SearchList = () => {
       <p className='text-md font-light mt-4'>Results for {debounceSearch}</p>
       <p className='mt-4'>{list?.length ?? 0} results</p>
     </div>
-    {isLoading ? <span>Loading...</span> : list?.map(row => (
+    {isLoading ? <Loader /> : list?.map(row => (
       <QuestionRow
         key={row.question_id}
         title={row.title}
@@ -92,4 +93,4 @@ const SearchList = () => {
   </div>
 }
 
-export default SearchList
+export default SearchPage
